@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	g := game.NewDemoGame()
+	g := game.NewSnakeGameProgram()
 	if err := g.Run(); err != nil {
 		g.Quit()
 		log.Println(err)

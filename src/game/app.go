@@ -1,10 +1,9 @@
 package game
 
 import (
-	"fmt"
-
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	"github.com/pseudoelement/terminal-snake/src/game/controllers"
 	menu_elements "github.com/pseudoelement/terminal-snake/src/game/menu-elements"
 	"github.com/pseudoelement/terminal-snake/src/models"
 )
@@ -17,11 +16,12 @@ type SnakeGameProgram struct {
 
 func NewSnakeGameProgram() SnakeGameProgram {
 	p := tea.NewProgram(
-		SnakeGame{},
+		&SnakeGame{},
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 		tea.WithFPS(30),
 	)
+
 	tea.ShowCursor()
 
 	return SnakeGameProgram{program: p}
@@ -37,48 +37,67 @@ func (this *SnakeGameProgram) Quit() {
 }
 
 type SnakeGame struct {
-	viewElements menu_elements.ViewElements
+	view           string
+	menuController *controllers.MenuController
+
+	width, height int
 }
 
-func (s SnakeGame) Init() tea.Cmd {
+func (this *SnakeGame) Init() tea.Cmd {
+	firstPage := menu_elements.NewFirstPage()
+	selectableElems := firstPage.SelectableElems()
+	firstSelectedElem := selectableElems[0]
+	firstSelectedElem.Select()
+
+	this.menuController = controllers.NewMenuController(firstPage)
+
 	return nil
 }
 
 // VIEW
-func (s SnakeGame) View() string {
-	btn := lipgloss.NewStyle().
-		Background(lipgloss.Color("#888B7E")).
-		MarginTop(10).
-		MarginRight(2).
-		// Border(lipgloss.RoundedBorder(), true).
-		Height(1)
-
-	return btn.Render("Click", "me")
+func (this *SnakeGame) View() string {
+	return this.menuController.Page().View()
 }
 
 // UPDATE
-func (s SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg.(type) {
 	case tea.KeyMsg:
 		switch msg.(tea.KeyMsg).String() {
+		case "up":
+			this.menuController.SelectNext()
+			return this, nil
+		case "down":
+			this.menuController.SelectPrev()
+			return this, nil
+		case "enter":
+			selectedEl := this.menuController.SelectedElem()
+			if selectedEl != nil {
+				selectedEl.Action()
+				redirectableEl, ok := selectedEl.(game_abstr.IRedirectableElement)
+				if ok {
+					nextPage := redirectableEl.NextPage()
+					this.menuController.SetPage(nextPage)
+				}
+			}
+
+			return this, nil
 		case "ctrl+c":
-			return s, tea.Quit
+			return this, tea.Quit
 		}
 
 	case tea.MouseMsg:
 		mouseMsg := msg.(tea.MouseMsg)
 		if mouseMsg.Button == tea.MouseButtonLeft && mouseMsg.Action == tea.MouseActionPress {
-			fmt.Println("Hello world")
 		}
-		return s, nil
+		return this, nil
 
 	case tea.WindowSizeMsg:
-		return s, func() tea.Msg {
-			return msg
-		}
+		this.width = msg.(tea.WindowSizeMsg).Width
+		this.height = msg.(tea.WindowSizeMsg).Height
 	}
 
-	return s, nil
+	return this, nil
 }
 
 var _ models.TerminalProgram = (*SnakeGameProgram)(nil)
