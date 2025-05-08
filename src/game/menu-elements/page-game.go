@@ -7,27 +7,25 @@ import (
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 )
 
-type FirstPage struct {
+type GamePage struct {
 	store           *store.Store
 	selectableElems []game_abstr.ISelectableElement
 }
 
-func NewFirstPage(store *store.Store) *FirstPage {
+func NewGamePage(store *store.Store) *GamePage {
 	selectableElems := []game_abstr.ISelectableElement{
-		NewPlayBtn(),
-		NewDifficultyBtn(),
 		NewQuitBtn(),
 	}
 	selectableElems[0].Select()
 
-	return &FirstPage{selectableElems: selectableElems, store: store}
+	return &GamePage{selectableElems: selectableElems, store: store}
 }
 
-func (this *FirstPage) Store() *store.Store {
+func (this *GamePage) Store() *store.Store {
 	return this.store
 }
 
-func (this *FirstPage) View() string {
+func (this *GamePage) View() string {
 	content := lipgloss.JoinVertical(
 		lipgloss.Center,
 		this.SelectableElemsToViews()...,
@@ -37,7 +35,7 @@ func (this *FirstPage) View() string {
 	h := this.store.Get(consts.HEIGHT).(int)
 
 	flex := lipgloss.Place(
-		w, h/2,
+		w, h,
 		lipgloss.Center, lipgloss.Bottom,
 		content,
 	)
@@ -45,7 +43,7 @@ func (this *FirstPage) View() string {
 	return flex
 }
 
-func (this *FirstPage) SelectableElemsToViews() []string {
+func (this *GamePage) SelectableElemsToViews() []string {
 	var views = make([]string, 0, len(this.selectableElems))
 	for _, el := range this.selectableElems {
 		views = append(views, el.View())
@@ -54,8 +52,8 @@ func (this *FirstPage) SelectableElemsToViews() []string {
 	return views
 }
 
-func (this *FirstPage) SelectableElems() []game_abstr.ISelectableElement {
+func (this *GamePage) SelectableElems() []game_abstr.ISelectableElement {
 	return this.selectableElems
 }
 
-var _ game_abstr.IPage = (*FirstPage)(nil)
+var _ game_abstr.IPage = (*GamePage)(nil)

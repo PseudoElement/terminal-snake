@@ -3,20 +3,28 @@ package menu_elements
 import (
 	"github.com/charmbracelet/lipgloss"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	consts "github.com/pseudoelement/terminal-snake/src/game/constants"
+	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 )
 
 type DifficultyPage struct {
+	store           *store.Store
 	selectableElems []game_abstr.ISelectableElement
 }
 
-func NewDifficultyPage() *DifficultyPage {
+func NewDifficultyPage(store *store.Store) *DifficultyPage {
 	selectableElems := []game_abstr.ISelectableElement{
 		NewEasyBtn(),
+		NewMediumBtn(),
 		NewHardBtn(),
 	}
 	selectableElems[0].Select()
 
-	return &DifficultyPage{selectableElems: selectableElems}
+	return &DifficultyPage{selectableElems: selectableElems, store: store}
+}
+
+func (this *DifficultyPage) Store() *store.Store {
+	return this.store
 }
 
 func (this *DifficultyPage) View() string {
@@ -25,8 +33,11 @@ func (this *DifficultyPage) View() string {
 		this.SelectableElemsToViews()...,
 	)
 
+	w := this.store.Get(consts.WIDTH).(int)
+	h := this.store.Get(consts.HEIGHT).(int)
+
 	flex := lipgloss.Place(
-		110, 14,
+		w, h/2,
 		lipgloss.Center, lipgloss.Bottom,
 		content,
 	)

@@ -9,7 +9,7 @@ var (
 			MarginBottom(1).
 			Align(lipgloss.Center, lipgloss.Center).
 			Height(1).
-			Width(10)
+			Width(15)
 
 	bluredBtn = lipgloss.NewStyle().
 			Background(lipgloss.Color("#90918d")).
@@ -17,5 +17,5 @@ var (
 			MarginBottom(1).
 			Align(lipgloss.Center, lipgloss.Center).
 			Height(1).
-			Width(10)
+			Width(15)
 )

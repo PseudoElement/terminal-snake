@@ -3,16 +3,12 @@ package controllers
 import game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 
 type MenuController struct {
-	selectedElemId string
-	page           game_abstr.IPage
+	page game_abstr.IPage
 }
 
 func NewMenuController(page game_abstr.IPage) *MenuController {
-	selectableElems := page.SelectableElems()
-
 	return &MenuController{
-		selectedElemId: selectableElems[0].Id(),
-		page:           page,
+		page: page,
 	}
 }
 
@@ -21,12 +17,12 @@ func (this *MenuController) Page() game_abstr.IPage {
 }
 
 func (this *MenuController) SelectedElemId() string {
-	return this.selectedElemId
+	return this.SelectedElem().Id()
 }
 
 func (this *MenuController) SelectedElem() game_abstr.ISelectableElement {
 	for _, el := range this.page.SelectableElems() {
-		if el.IsSelected(this.selectedElemId) {
+		if el.IsSelected() {
 			return el
 		}
 	}
@@ -40,7 +36,7 @@ func (this *MenuController) SetPage(page game_abstr.IPage) {
 func (this *MenuController) SelectNext() {
 	var currSelectedIdx int
 	for idx, el := range this.page.SelectableElems() {
-		if el.IsSelected(this.selectedElemId) {
+		if el.IsSelected() {
 			currSelectedIdx = idx
 			el.Blur()
 			break
@@ -54,27 +50,25 @@ func (this *MenuController) SelectNext() {
 		newSelectedElem = this.page.SelectableElems()[currSelectedIdx+1]
 	}
 
-	this.selectedElemId = newSelectedElem.Id()
 	newSelectedElem.Select()
 }
 
 func (this *MenuController) SelectPrev() {
 	var currSelectedIdx int
 	for idx, el := range this.page.SelectableElems() {
-		if el.IsSelected(this.selectedElemId) {
+		if el.IsSelected() {
 			currSelectedIdx = idx
 			el.Blur()
 			break
 		}
 	}
 
-	var newSelectedElem game_abstr.IViewElement
+	var newSelectedElem game_abstr.ISelectableElement
 	if currSelectedIdx == 0 {
 		newSelectedElem = this.page.SelectableElems()[len(this.page.SelectableElems())-1]
 	} else {
 		newSelectedElem = this.page.SelectableElems()[currSelectedIdx-1]
 	}
 
-	this.selectedElemId = newSelectedElem.Id()
-	newSelectedElem.(game_abstr.ISelectableElement).Select()
+	newSelectedElem.Select()
 }

@@ -5,22 +5,25 @@ import (
 	"os/exec"
 
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 )
 
 type QuitBtn struct {
-	game_abstr.SelectableElement
+	*game_abstr.SelectableElement
 }
 
 func NewQuitBtn() *QuitBtn {
 	teaElement := bluredBtn
+	teaElement.Width(20)
+
 	btn := &QuitBtn{
-		SelectableElement: *game_abstr.NewSelectableElement(teaElement),
+		SelectableElement: game_abstr.NewSelectableElement(teaElement),
 	}
 
 	return btn
 }
 
-func (this *QuitBtn) Action() {
+func (this *QuitBtn) Action(store *store.Store) {
 	exec.Command("clear").Run()
 	os.Exit(1)
 }
@@ -31,12 +34,16 @@ func (this *QuitBtn) View() string {
 
 func (this *QuitBtn) Select() {
 	selectedTeaElem := selectedBtn
+	selectedTeaElem.Width(20)
+
 	this.SetSelected(true)
 	this.UpdateTeaElement(selectedTeaElem)
 }
 
 func (this *QuitBtn) Blur() {
 	bluredTeaElem := bluredBtn
+	bluredTeaElem.Width(20)
+
 	this.SetSelected(false)
 	this.UpdateTeaElement(bluredTeaElem)
 }

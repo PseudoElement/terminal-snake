@@ -1,6 +1,9 @@
 package game_abstr
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+	"github.com/pseudoelement/terminal-snake/src/game/services/store"
+)
 
 type IViewElement interface {
 	/* update style on action */
@@ -17,7 +20,7 @@ type ISelectableElement interface {
 	IViewElement
 
 	/* optional action when element was clicked */
-	Action()
+	Action(store *store.Store)
 
 	Select()
 
@@ -26,14 +29,14 @@ type ISelectableElement interface {
 	SetSelected(selected bool)
 
 	/* whether element selected or not */
-	IsSelected(selectedElemId string) bool
+	IsSelected() bool
 }
 
 type IRedirectableElement interface {
 	ISelectableElement
 
 	/* next element for rendering after clicking on element */
-	NextPage() IPage
+	NextPage(store *store.Store) IPage
 }
 
 type IPage interface {
@@ -42,4 +45,6 @@ type IPage interface {
 	SelectableElemsToViews() []string
 
 	View() string
+
+	Store() *store.Store
 }

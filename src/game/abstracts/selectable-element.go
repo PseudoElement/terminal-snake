@@ -11,8 +11,8 @@ func NewSelectableElement(teaElement lipgloss.Style) *SelectableElement {
 	return &SelectableElement{BaseViewElement: NewBaseViewElement(teaElement)}
 }
 
-func (this *SelectableElement) IsSelected(selectedElemId string) bool {
-	return selectedElemId == this.id
+func (this *SelectableElement) IsSelected() bool {
+	return this.selected
 }
 
 func (this *SelectableElement) SetSelected(selected bool) {

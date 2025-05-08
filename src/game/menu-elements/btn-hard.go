@@ -2,25 +2,29 @@ package menu_elements
 
 import (
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	consts "github.com/pseudoelement/terminal-snake/src/game/constants"
+	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 )
 
 type HardBtn struct {
-	game_abstr.SelectableElement
+	*game_abstr.SelectableElement
 }
 
 func NewHardBtn() *HardBtn {
 	teaElement := bluredBtn
 	btn := &HardBtn{
-		SelectableElement: *game_abstr.NewSelectableElement(teaElement),
+		SelectableElement: game_abstr.NewSelectableElement(teaElement),
 	}
 
 	return btn
 }
 
-func (this *HardBtn) Action() {}
+func (this *HardBtn) Action(store *store.Store) {
+	store.Add(consts.DIFFICULTY, consts.HARD_LVL)
+}
 
-func (this *HardBtn) NextPage() game_abstr.IPage {
-	return NewFirstPage()
+func (this *HardBtn) NextPage(store *store.Store) game_abstr.IPage {
+	return NewFirstPage(store)
 }
 
 func (this *HardBtn) View() string {

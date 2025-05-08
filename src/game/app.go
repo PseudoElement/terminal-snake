@@ -1,10 +1,14 @@
 package game
 
 import (
+	"context"
+
 	tea "github.com/charmbracelet/bubbletea"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	consts "github.com/pseudoelement/terminal-snake/src/game/constants"
 	"github.com/pseudoelement/terminal-snake/src/game/controllers"
 	menu_elements "github.com/pseudoelement/terminal-snake/src/game/menu-elements"
+	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	"github.com/pseudoelement/terminal-snake/src/models"
 )
 
@@ -37,14 +41,15 @@ func (this *SnakeGameProgram) Quit() {
 }
 
 type SnakeGame struct {
-	view           string
 	menuController *controllers.MenuController
-
-	width, height int
+	ctx            context.Context
+	store          *store.Store
 }
 
 func (this *SnakeGame) Init() tea.Cmd {
-	firstPage := menu_elements.NewFirstPage()
+	this.store = store.NewStore()
+
+	firstPage := menu_elements.NewFirstPage(this.store)
 	selectableElems := firstPage.SelectableElems()
 	firstSelectedElem := selectableElems[0]
 	firstSelectedElem.Select()
@@ -65,18 +70,18 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.(tea.KeyMsg).String() {
 		case "up":
-			this.menuController.SelectNext()
+			this.menuController.SelectPrev()
 			return this, nil
 		case "down":
-			this.menuController.SelectPrev()
+			this.menuController.SelectNext()
 			return this, nil
 		case "enter":
 			selectedEl := this.menuController.SelectedElem()
 			if selectedEl != nil {
-				selectedEl.Action()
+				selectedEl.Action(this.store)
 				redirectableEl, ok := selectedEl.(game_abstr.IRedirectableElement)
 				if ok {
-					nextPage := redirectableEl.NextPage()
+					nextPage := redirectableEl.NextPage(this.store)
 					this.menuController.SetPage(nextPage)
 				}
 			}
@@ -93,8 +98,11 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return this, nil
 
 	case tea.WindowSizeMsg:
-		this.width = msg.(tea.WindowSizeMsg).Width
-		this.height = msg.(tea.WindowSizeMsg).Height
+		width := msg.(tea.WindowSizeMsg).Width
+		height := msg.(tea.WindowSizeMsg).Height
+
+		this.store.Add(consts.WIDTH, width)
+		this.store.Add(consts.HEIGHT, height)
 	}
 
 	return this, nil
