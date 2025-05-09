@@ -88,6 +88,7 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return this, nil
 		case "ctrl+c":
+		case "esc":
 			return this, tea.Quit
 		}
 

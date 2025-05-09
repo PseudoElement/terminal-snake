@@ -24,7 +24,9 @@ func NewQuitBtn() *QuitBtn {
 }
 
 func (this *QuitBtn) Action(store *store.Store) {
-	exec.Command("clear").Run()
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 	os.Exit(1)
 }
 
