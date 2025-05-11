@@ -5,11 +5,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type Coords struct {
-	x, y          int
-	width, height int
-}
-
 type BaseViewElement struct {
 	id         string
 	teaElement lipgloss.Style

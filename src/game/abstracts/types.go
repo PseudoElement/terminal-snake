@@ -48,3 +48,9 @@ type IPage interface {
 
 	Store() *store.Store
 }
+
+type IDiffLevel interface {
+	LoopDelayMs() int16
+
+	IsSnakeDied() bool
+}

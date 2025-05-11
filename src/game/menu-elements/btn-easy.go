@@ -2,8 +2,9 @@ package menu_elements
 
 import (
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
-	consts "github.com/pseudoelement/terminal-snake/src/game/constants"
+	diff_levels "github.com/pseudoelement/terminal-snake/src/game/entities/difficulty-levels"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 type EasyBtn struct {
@@ -20,7 +21,7 @@ func NewEasyBtn() *EasyBtn {
 }
 
 func (this *EasyBtn) Action(store *store.Store) {
-	store.Add(consts.DIFFICULTY, consts.EASY_LVL)
+	store.Add(consts.DIFFICULTY, diff_levels.NewEasyLevel())
 }
 
 func (this *EasyBtn) NextPage(store *store.Store) game_abstr.IPage {

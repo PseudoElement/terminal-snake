@@ -7,9 +7,10 @@ const (
 	DIFFICULTY = "DIFFICULTY"
 )
 
-// difficulty levels
+// snake movement directions
 const (
-	EASY_LVL   = "EASY"
-	MEDIUM_LVL = "MEDIUM"
-	HARD_LVL   = "HARD"
+	UP    = "UP"
+	DOWN  = "DOWN"
+	RIGHT = "RIGHT"
+	LEFT  = "LEFT"
 )

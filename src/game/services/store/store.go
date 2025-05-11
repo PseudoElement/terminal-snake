@@ -2,8 +2,6 @@ package store
 
 import (
 	"sync"
-
-	consts "github.com/pseudoelement/terminal-snake/src/game/constants"
 )
 
 type Store struct {
@@ -12,12 +10,7 @@ type Store struct {
 }
 
 func NewStore() *Store {
-	store := make(map[string]any, 20)
-	store[consts.HEIGHT] = 100
-	store[consts.WIDTH] = 15
-	store[consts.DIFFICULTY] = consts.EASY_LVL
-
-	return &Store{store: store}
+	return &Store{store: make(map[string]any, 20)}
 }
 
 func (this *Store) Add(key string, value any) {

@@ -1,15 +1,14 @@
 package game
 
 import (
-	"context"
-
 	tea "github.com/charmbracelet/bubbletea"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
-	consts "github.com/pseudoelement/terminal-snake/src/game/constants"
 	"github.com/pseudoelement/terminal-snake/src/game/controllers"
+	diff_levels "github.com/pseudoelement/terminal-snake/src/game/entities/difficulty-levels"
 	menu_elements "github.com/pseudoelement/terminal-snake/src/game/menu-elements"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	"github.com/pseudoelement/terminal-snake/src/models"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 // MODEL DATA
@@ -41,13 +40,17 @@ func (this *SnakeGameProgram) Quit() {
 }
 
 type SnakeGame struct {
+	gameController *controllers.GameController
 	menuController *controllers.MenuController
-	ctx            context.Context
 	store          *store.Store
 }
 
 func (this *SnakeGame) Init() tea.Cmd {
 	this.store = store.NewStore()
+
+	this.store.Add(consts.HEIGHT, 100)
+	this.store.Add(consts.WIDTH, 15)
+	this.store.Add(consts.DIFFICULTY, diff_levels.NewEasyLevel())
 
 	firstPage := menu_elements.NewFirstPage(this.store)
 	selectableElems := firstPage.SelectableElems()
@@ -55,6 +58,7 @@ func (this *SnakeGame) Init() tea.Cmd {
 	firstSelectedElem.Select()
 
 	this.menuController = controllers.NewMenuController(firstPage)
+	this.gameController = controllers.NewGameController()
 
 	return nil
 }
@@ -90,6 +94,15 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 		case "esc":
 			return this, tea.Quit
+
+		case "w":
+			return this, nil
+		case "s":
+			return this, nil
+		case "a":
+			return this, nil
+		case "d":
+			return this, nil
 		}
 
 	case tea.MouseMsg:

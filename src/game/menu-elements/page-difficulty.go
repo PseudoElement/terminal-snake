@@ -3,8 +3,8 @@ package menu_elements
 import (
 	"github.com/charmbracelet/lipgloss"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
-	consts "github.com/pseudoelement/terminal-snake/src/game/constants"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 type DifficultyPage struct {
