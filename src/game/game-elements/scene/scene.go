@@ -3,8 +3,8 @@ package scene
 import (
 	"github.com/charmbracelet/lipgloss"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
-	"github.com/pseudoelement/terminal-snake/src/game/entities/cell"
-	"github.com/pseudoelement/terminal-snake/src/game/entities/snake"
+	"github.com/pseudoelement/terminal-snake/src/game/game-elements/cell"
+	"github.com/pseudoelement/terminal-snake/src/game/game-elements/snake"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )

@@ -4,7 +4,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 	"github.com/pseudoelement/terminal-snake/src/game/controllers"
-	diff_levels "github.com/pseudoelement/terminal-snake/src/game/entities/difficulty-levels"
+	diff_levels "github.com/pseudoelement/terminal-snake/src/game/game-elements/difficulty-levels"
+
 	menu_elements "github.com/pseudoelement/terminal-snake/src/game/menu-elements"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	"github.com/pseudoelement/terminal-snake/src/models"

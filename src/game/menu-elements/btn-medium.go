@@ -2,7 +2,7 @@ package menu_elements
 
 import (
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
-	diff_levels "github.com/pseudoelement/terminal-snake/src/game/entities/difficulty-levels"
+	diff_levels "github.com/pseudoelement/terminal-snake/src/game/game-elements/difficulty-levels"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )

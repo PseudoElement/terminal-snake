@@ -2,7 +2,7 @@ package snake
 
 import (
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
-	"github.com/pseudoelement/terminal-snake/src/game/entities/cell"
+	"github.com/pseudoelement/terminal-snake/src/game/game-elements/cell"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 	data_structs "github.com/pseudoelement/terminal-snake/src/shared/data-structures"
