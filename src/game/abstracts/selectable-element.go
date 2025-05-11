@@ -3,7 +3,7 @@ package game_abstr
 import "github.com/charmbracelet/lipgloss"
 
 type SelectableElement struct {
-	BaseViewElement
+	*BaseViewElement
 	selected bool
 }
 

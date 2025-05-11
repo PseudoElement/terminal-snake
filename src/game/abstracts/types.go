@@ -42,6 +42,8 @@ type IRedirectableElement interface {
 type IPage interface {
 	SelectableElems() []ISelectableElement
 
+	HasSelectableElems() bool
+
 	SelectableElemsToViews() []string
 
 	View() string
@@ -49,8 +51,14 @@ type IPage interface {
 	Store() *store.Store
 }
 
+type IGamePage interface {
+	IPage
+
+	GameScene() IGameScene
+}
+
 type IDiffLevel interface {
-	LoopDelayMs() int16
+	LoopDelayMs() int64
 
 	IsSnakeDied() bool
 }

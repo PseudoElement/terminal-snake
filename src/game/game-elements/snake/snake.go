@@ -1,6 +1,8 @@
 package snake
 
 import (
+	"fmt"
+
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 	"github.com/pseudoelement/terminal-snake/src/game/game-elements/cell"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
@@ -9,7 +11,7 @@ import (
 )
 
 type Snake struct {
-	body   data_structs.List[*cell.Cell]
+	body   data_structs.List[game_abstr.ICell]
 	length int
 	store  *store.Store
 	dead   bool
@@ -17,8 +19,14 @@ type Snake struct {
 }
 
 func NewSnake(startLen int, scene game_abstr.IGameScene, store *store.Store) *Snake {
+	terminalWidth := store.Get(consts.WIDTH).(int)
+
 	if startLen <= 0 {
 		startLen = 2
+	}
+	if startLen >= terminalWidth/2 {
+		err := fmt.Sprintf("NewSnake: max len of snake is %d", terminalWidth/2-1)
+		panic(err)
 	}
 
 	snake := &Snake{
@@ -32,27 +40,20 @@ func NewSnake(startLen int, scene game_abstr.IGameScene, store *store.Store) *Sn
 	return snake
 }
 
-func (this *Snake) Body() data_structs.List[*cell.Cell] {
+func (this *Snake) Body() data_structs.List[game_abstr.ICell] {
 	return this.body
 }
 
-func (this *Snake) initBody() {
-	body := data_structs.NewList[*cell.Cell](nil)
-
-	terminalWidth := this.store.Get(consts.WIDTH).(int)
-	terminalHeight := this.store.Get(consts.HEIGHT).(int)
-	xCoord := terminalWidth / 2
-	yCoord := terminalHeight / 2
-
-	for i := 0; i < this.length; i++ {
-		cell := cell.NewCell(cell.GreenCell, cell.CellCoords{
-			X: xCoord,
-			Y: yCoord,
-		})
-		body.Push(cell)
+func (this *Snake) Find(value game_abstr.CellCoords) (snakeCell game_abstr.ICell, isFound bool) {
+	next := this.body.Head()
+	for next != nil {
+		if next.Val.Coords().X == value.X && next.Val.Coords().Y == value.Y {
+			return next.Val, true
+		}
+		next = next.Next
 	}
 
-	this.body = body
+	return nil, false
 }
 
 func (this *Snake) Move(direction string) {
@@ -63,7 +64,7 @@ func (this *Snake) Move(direction string) {
 
 	listNode := this.body.Head()
 	prevCoords := this.body.Head().Val.Coords()
-	nextCoords := cell.CellCoords{
+	nextCoords := game_abstr.CellCoords{
 		X: this.body.Head().Val.Coords().X + moveDir.X,
 		Y: this.body.Head().Val.Coords().Y + moveDir.Y,
 	}
@@ -78,6 +79,10 @@ func (this *Snake) Move(direction string) {
 	if this.scene.IsSnakeOutScene() {
 		this.Die()
 	}
+}
+
+func (this *Snake) IsDead() bool {
+	return this.dead
 }
 
 func (this *Snake) Die() {
@@ -96,7 +101,7 @@ func (this *Snake) Eat(c *cell.Cell, scene game_abstr.IGameScene) {
 	this.body.Push(c)
 }
 
-func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords cell.CellCoords) cell.CellCoords {
+func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords game_abstr.CellCoords) game_abstr.CellCoords {
 	var priorityDirection = MoveDir{X: 1, Y: 0}
 	if prevTailCoords.X > prevPreTailCoords.X {
 		// to right
@@ -112,9 +117,9 @@ func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords cell.Cel
 		priorityDirection = MoveDir{X: 0, Y: -1}
 	}
 
-	var checkNearestCellAvailable func(tailCoord cell.CellCoords, moveDir MoveDir) (newTailCoord cell.CellCoords, isAvailable bool)
-	checkNearestCellAvailable = func(tailCoord cell.CellCoords, moveDir MoveDir) (newTailCoord cell.CellCoords, isAvailable bool) {
-		newCoord := cell.CellCoords{
+	var checkNearestCellAvailable func(tailCoord game_abstr.CellCoords, moveDir MoveDir) (newTailCoord game_abstr.CellCoords, isAvailable bool)
+	checkNearestCellAvailable = func(tailCoord game_abstr.CellCoords, moveDir MoveDir) (newTailCoord game_abstr.CellCoords, isAvailable bool) {
+		newCoord := game_abstr.CellCoords{
 			X: tailCoord.X + moveDir.X,
 			Y: tailCoord.Y + moveDir.Y,
 		}
@@ -147,13 +152,32 @@ func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords cell.Cel
 		}
 	}
 
-	return cell.CellCoords{
+	return game_abstr.CellCoords{
 		X: prevTailCoords.X + directions[consts.LEFT].X,
 		Y: prevTailCoords.Y + directions[consts.LEFT].Y,
 	}
 }
 
-/*
-	x15 y15 -> x16 y15
-	x1 y10 -> x0 y10 = x0 y10
-*/
+func (this *Snake) initBody() {
+	xCoord := this.scene.SceneSize().Width / 2
+	yCoord := this.scene.SceneSize().Height / 2
+
+	firstCell := &data_structs.ListNode[game_abstr.ICell]{
+		Val: cell.NewCell(cell.BlueCell, game_abstr.CellCoords{
+			X: xCoord,
+			Y: yCoord,
+		}),
+		Next: nil,
+	}
+	body := data_structs.NewList(firstCell)
+
+	for i := 1; i < this.length; i++ {
+		cell := cell.NewCell(cell.BlueCell, game_abstr.CellCoords{
+			X: xCoord - i,
+			Y: yCoord,
+		})
+		body.Push(cell)
+	}
+
+	this.body = body
+}

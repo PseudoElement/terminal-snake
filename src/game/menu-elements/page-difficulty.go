@@ -8,8 +8,7 @@ import (
 )
 
 type DifficultyPage struct {
-	store           *store.Store
-	selectableElems []game_abstr.ISelectableElement
+	*game_abstr.Page
 }
 
 func NewDifficultyPage(store *store.Store) *DifficultyPage {
@@ -20,11 +19,9 @@ func NewDifficultyPage(store *store.Store) *DifficultyPage {
 	}
 	selectableElems[0].Select()
 
-	return &DifficultyPage{selectableElems: selectableElems, store: store}
-}
-
-func (this *DifficultyPage) Store() *store.Store {
-	return this.store
+	return &DifficultyPage{
+		Page: game_abstr.NewPage(store, selectableElems),
+	}
 }
 
 func (this *DifficultyPage) View() string {
@@ -33,8 +30,8 @@ func (this *DifficultyPage) View() string {
 		this.SelectableElemsToViews()...,
 	)
 
-	w := this.store.Get(consts.WIDTH).(int)
-	h := this.store.Get(consts.HEIGHT).(int)
+	w := this.Store().Get(consts.WIDTH).(int)
+	h := this.Store().Get(consts.HEIGHT).(int)
 
 	flex := lipgloss.Place(
 		w, h/2,
@@ -43,19 +40,6 @@ func (this *DifficultyPage) View() string {
 	)
 
 	return flex
-}
-
-func (this *DifficultyPage) SelectableElemsToViews() []string {
-	var views = make([]string, 0, len(this.selectableElems))
-	for _, el := range this.selectableElems {
-		views = append(views, el.View())
-	}
-
-	return views
-}
-
-func (this *DifficultyPage) SelectableElems() []game_abstr.ISelectableElement {
-	return this.selectableElems
 }
 
 var _ game_abstr.IPage = (*DifficultyPage)(nil)

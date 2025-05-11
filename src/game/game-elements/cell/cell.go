@@ -5,16 +5,12 @@ import (
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 )
 
-type CellCoords struct {
-	X, Y int
-}
-
 type Cell struct {
-	game_abstr.BaseViewElement
-	coords CellCoords
+	*game_abstr.BaseViewElement
+	coords game_abstr.CellCoords
 }
 
-func NewCell(cellStyle lipgloss.Style, coords CellCoords) *Cell {
+func NewCell(cellStyle lipgloss.Style, coords game_abstr.CellCoords) *Cell {
 	cell := &Cell{
 		BaseViewElement: game_abstr.NewBaseViewElement(cellStyle),
 		coords:          coords,
@@ -26,12 +22,12 @@ func (this *Cell) View() string {
 	return this.TeaElement().Render()
 }
 
-func (this *Cell) Coords() CellCoords {
+func (this *Cell) Coords() game_abstr.CellCoords {
 	return this.coords
 }
 
-func (this *Cell) SetCoords(coords CellCoords) {
+func (this *Cell) SetCoords(coords game_abstr.CellCoords) {
 	this.coords = coords
 }
 
-// var _ game_abstr.IViewElement = (*Cell)(nil)
+var _ game_abstr.ICell = (*Cell)(nil)

@@ -9,7 +9,7 @@ func NewEasyLevel() *EasyLevel {
 	return &EasyLevel{}
 }
 
-func (this *EasyLevel) LoopDelayMs() int16 {
+func (this *EasyLevel) LoopDelayMs() int64 {
 	return 500
 }
 

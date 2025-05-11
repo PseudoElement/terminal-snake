@@ -9,7 +9,7 @@ func NewHardLevel() *HardLevel {
 	return &HardLevel{}
 }
 
-func (this *HardLevel) LoopDelayMs() int16 {
+func (this *HardLevel) LoopDelayMs() int64 {
 	return 500
 }
 

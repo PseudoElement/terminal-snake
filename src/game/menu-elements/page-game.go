@@ -3,57 +3,49 @@ package menu_elements
 import (
 	"github.com/charmbracelet/lipgloss"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	exitinfo "github.com/pseudoelement/terminal-snake/src/game/game-elements/exit-info"
+	"github.com/pseudoelement/terminal-snake/src/game/game-elements/scene"
+	"github.com/pseudoelement/terminal-snake/src/game/game-elements/score"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 type GamePage struct {
-	store           *store.Store
-	selectableElems []game_abstr.ISelectableElement
+	*game_abstr.Page
+	gameScene game_abstr.IGameScene
+	score     *score.Score
+	exitInfo  *exitinfo.ExitInfo
 }
 
 func NewGamePage(store *store.Store) *GamePage {
-	selectableElems := []game_abstr.ISelectableElement{
-		NewQuitBtn(),
+	return &GamePage{
+		Page:      game_abstr.NewPage(store, make([]game_abstr.ISelectableElement, 0)),
+		gameScene: scene.NewGameScene(store),
+		score:     score.NewScore(),
+		exitInfo:  exitinfo.NewExitInfo(),
 	}
-	selectableElems[0].Select()
-
-	return &GamePage{selectableElems: selectableElems, store: store}
-}
-
-func (this *GamePage) Store() *store.Store {
-	return this.store
 }
 
 func (this *GamePage) View() string {
 	content := lipgloss.JoinVertical(
 		lipgloss.Center,
-		this.SelectableElemsToViews()...,
+		this.score.View(), this.exitInfo.View(), this.gameScene.View(),
 	)
 
-	w := this.store.Get(consts.WIDTH).(int)
-	h := this.store.Get(consts.HEIGHT).(int)
+	w := this.Store().Get(consts.WIDTH).(int) + 3
+	h := this.Store().Get(consts.HEIGHT).(int)
 
 	flex := lipgloss.Place(
 		w, h,
-		lipgloss.Center, lipgloss.Bottom,
+		lipgloss.Center, lipgloss.Center,
 		content,
 	)
 
 	return flex
 }
 
-func (this *GamePage) SelectableElemsToViews() []string {
-	var views = make([]string, 0, len(this.selectableElems))
-	for _, el := range this.selectableElems {
-		views = append(views, el.View())
-	}
-
-	return views
+func (this *GamePage) GameScene() game_abstr.IGameScene {
+	return this.gameScene
 }
 
-func (this *GamePage) SelectableElems() []game_abstr.ISelectableElement {
-	return this.selectableElems
-}
-
-var _ game_abstr.IPage = (*GamePage)(nil)
+var _ game_abstr.IGamePage = (*GamePage)(nil)

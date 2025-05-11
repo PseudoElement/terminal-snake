@@ -1,4 +1,4 @@
-package controllers
+package menu_controller
 
 import game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 

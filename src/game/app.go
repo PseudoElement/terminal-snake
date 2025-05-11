@@ -3,9 +3,9 @@ package game
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
-	"github.com/pseudoelement/terminal-snake/src/game/controllers"
+	game_controller "github.com/pseudoelement/terminal-snake/src/game/controllers/game-controller"
+	menu_controller "github.com/pseudoelement/terminal-snake/src/game/controllers/menu-controller"
 	diff_levels "github.com/pseudoelement/terminal-snake/src/game/game-elements/difficulty-levels"
-
 	menu_elements "github.com/pseudoelement/terminal-snake/src/game/menu-elements"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
 	"github.com/pseudoelement/terminal-snake/src/models"
@@ -22,7 +22,7 @@ func NewSnakeGameProgram() SnakeGameProgram {
 	p := tea.NewProgram(
 		&SnakeGame{},
 		tea.WithAltScreen(),
-		tea.WithMouseCellMotion(),
+		// tea.WithMouseCellMotion(),
 		tea.WithFPS(30),
 	)
 
@@ -41,8 +41,8 @@ func (this *SnakeGameProgram) Quit() {
 }
 
 type SnakeGame struct {
-	gameController *controllers.GameController
-	menuController *controllers.MenuController
+	gameController *game_controller.GameController
+	menuController *menu_controller.MenuController
 	store          *store.Store
 }
 
@@ -52,20 +52,28 @@ func (this *SnakeGame) Init() tea.Cmd {
 	this.store.Add(consts.HEIGHT, 100)
 	this.store.Add(consts.WIDTH, 15)
 	this.store.Add(consts.DIFFICULTY, diff_levels.NewEasyLevel())
+	this.store.Add(consts.MOVE_DIRECTION, consts.RIGHT)
 
 	firstPage := menu_elements.NewFirstPage(this.store)
 	selectableElems := firstPage.SelectableElems()
 	firstSelectedElem := selectableElems[0]
 	firstSelectedElem.Select()
 
-	this.menuController = controllers.NewMenuController(firstPage)
-	this.gameController = controllers.NewGameController()
+	this.menuController = menu_controller.NewMenuController(firstPage)
+	this.gameController = game_controller.NewGameController(this.store)
 
 	return nil
 }
 
 // VIEW
 func (this *SnakeGame) View() string {
+	if this.gameController != nil && this.gameController.ShowDeathScreen() {
+		adp := menu_elements.NewAfterDeathPage(this.store, func() {
+			this.gameController.SetShowDeathScreen(false)
+		})
+		this.menuController.SetPage(adp)
+		return adp.View()
+	}
 	return this.menuController.Page().View()
 }
 
@@ -75,10 +83,14 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.(tea.KeyMsg).String() {
 		case "up":
-			this.menuController.SelectPrev()
+			if this.menuController.Page().HasSelectableElems() {
+				this.menuController.SelectPrev()
+			}
 			return this, nil
 		case "down":
-			this.menuController.SelectNext()
+			if this.menuController.Page().HasSelectableElems() {
+				this.menuController.SelectNext()
+			}
 			return this, nil
 		case "enter":
 			selectedEl := this.menuController.SelectedElem()
@@ -88,21 +100,32 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if ok {
 					nextPage := redirectableEl.NextPage(this.store)
 					this.menuController.SetPage(nextPage)
+					gamePage, ok := nextPage.(game_abstr.IGamePage)
+					if ok {
+						this.gameController.SetGameScene(gamePage.GameScene())
+						this.gameController.RunGameLoop()
+					}
 				}
 			}
-
+			return this, nil
+		case "esc":
+			firstPage := menu_elements.NewFirstPage(this.store)
+			this.menuController.SetPage(firstPage)
 			return this, nil
 		case "ctrl+c":
-		case "esc":
 			return this, tea.Quit
 
 		case "w":
+			this.store.Add(consts.MOVE_DIRECTION, consts.UP)
 			return this, nil
 		case "s":
+			this.store.Add(consts.MOVE_DIRECTION, consts.DOWN)
 			return this, nil
 		case "a":
+			this.store.Add(consts.MOVE_DIRECTION, consts.LEFT)
 			return this, nil
 		case "d":
+			this.store.Add(consts.MOVE_DIRECTION, consts.RIGHT)
 			return this, nil
 		}
 

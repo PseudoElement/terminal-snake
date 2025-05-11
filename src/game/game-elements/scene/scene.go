@@ -1,6 +1,8 @@
 package scene
 
 import (
+	"math"
+
 	"github.com/charmbracelet/lipgloss"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 	"github.com/pseudoelement/terminal-snake/src/game/game-elements/cell"
@@ -10,21 +12,24 @@ import (
 )
 
 type GameScene struct {
-	top, bottom, left, right int
-	store                    *store.Store
-	snake                    *snake.Snake
-	gameZone                 [][]game_abstr.ICell
+	sceneSize game_abstr.SceneSize
+	store     *store.Store
+	snake     *snake.Snake
+	gameZone  [][]game_abstr.ICell
 }
 
 func NewGameScene(store *store.Store) *GameScene {
-	bottom := store.Get(consts.HEIGHT).(int)
-	right := store.Get(consts.WIDTH).(int)
+	h := store.Get(consts.HEIGHT).(int)
+	w := store.Get(consts.WIDTH).(int)
+	sceneHeight := h - 5
+	sceneWidth := int(math.Floor(float64(w) / 2.1))
 
 	scene := &GameScene{
-		top:    0,
-		bottom: bottom,
-		left:   0,
-		right:  right,
+		store: store,
+		sceneSize: game_abstr.SceneSize{
+			Width:  sceneWidth,
+			Height: sceneHeight,
+		},
 	}
 	scene.createGameZone()
 	scene.snake = snake.NewSnake(2, scene, store)
@@ -32,30 +37,35 @@ func NewGameScene(store *store.Store) *GameScene {
 	return scene
 }
 
-func (this *GameScene) Width() int {
-	return this.right
+func (this *GameScene) Snake() game_abstr.ISnake {
+	return this.snake
 }
 
-func (this *GameScene) Height() int {
-	return this.bottom
+func (this *GameScene) SceneSize() game_abstr.SceneSize {
+	return this.sceneSize
 }
 
 func (this *GameScene) IsSnakeOutScene() bool {
 	snakeBody := this.snake.Body()
 	snakeHead := snakeBody.Head().Val
 
-	return snakeHead.Coords().X < this.top ||
-		snakeHead.Coords().Y < this.left ||
-		snakeHead.Coords().X > this.right ||
-		snakeHead.Coords().Y > this.bottom
+	return snakeHead.Coords().X < 0 ||
+		snakeHead.Coords().Y < 0 ||
+		snakeHead.Coords().X > this.sceneSize.Width ||
+		snakeHead.Coords().Y > this.sceneSize.Height
 }
 
 func (this *GameScene) View() string {
 	rowsJoins := make([]string, 0, len(this.gameZone)-1)
-	for _, row := range this.gameZone {
+	for y, row := range this.gameZone {
 		cellsToViews := make([]string, 0, len(this.gameZone[0])-1)
-		for _, cell := range row {
-			cellsToViews = append(cellsToViews, cell.View())
+		for x, rowCell := range row {
+			snakeCell, found := this.snake.Find(game_abstr.CellCoords{X: x, Y: y})
+			if found {
+				cellsToViews = append(cellsToViews, snakeCell.View())
+			} else {
+				cellsToViews = append(cellsToViews, rowCell.View())
+			}
 		}
 
 		rowsJoin := lipgloss.JoinHorizontal(
@@ -71,7 +81,7 @@ func (this *GameScene) View() string {
 	)
 
 	view := lipgloss.Place(
-		this.Width()-2, this.Height()-5,
+		this.sceneSize.Width-2, this.sceneSize.Height-5,
 		lipgloss.Center, lipgloss.Center,
 		verticalJoin,
 	)
@@ -84,18 +94,26 @@ func (this *GameScene) GameZone() [][]game_abstr.ICell {
 }
 
 func (this *GameScene) createGameZone() {
-	rowsCount := this.bottom - 5
-	columnsCount := this.right - 5
+	rowsCount := this.sceneSize.Height
+	columnsCount := this.sceneSize.Width
 	rows := make([][]game_abstr.ICell, 0, rowsCount)
 
 	for i := 0; i < rowsCount; i++ {
 		row := make([]game_abstr.ICell, 0, columnsCount)
 		for j := 0; j < columnsCount; j++ {
-			cell := cell.NewCell(cell.GrayCell, cell.CellCoords{
-				X: j,
-				Y: i,
-			})
-			row = append(row, cell)
+			if (i%2 == 0 && j%2 == 0) || (i%2 != 0 && j%2 != 0) {
+				cell := cell.NewCell(cell.DarkGrayCell, game_abstr.CellCoords{
+					X: j,
+					Y: i,
+				})
+				row = append(row, cell)
+			} else {
+				cell := cell.NewCell(cell.GrayCell, game_abstr.CellCoords{
+					X: j,
+					Y: i,
+				})
+				row = append(row, cell)
+			}
 		}
 
 		rows = append(rows, row)
@@ -103,5 +121,7 @@ func (this *GameScene) createGameZone() {
 
 	this.gameZone = rows
 }
+
+func (this *GameScene) RunGameLoop() {}
 
 var _ game_abstr.IGameScene = (*GameScene)(nil)

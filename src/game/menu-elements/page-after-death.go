@@ -7,24 +7,22 @@ import (
 	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
-type FirstPage struct {
+type AfterDeathPage struct {
 	*game_abstr.Page
 }
 
-func NewFirstPage(store *store.Store) *FirstPage {
+func NewAfterDeathPage(store *store.Store, closePage func()) *AfterDeathPage {
 	selectableElems := []game_abstr.ISelectableElement{
-		NewPlayBtn(),
-		NewDifficultyBtn(),
-		NewQuitBtn(),
+		NewBackToMenuBtn(closePage),
 	}
 	selectableElems[0].Select()
 
-	return &FirstPage{
+	return &AfterDeathPage{
 		Page: game_abstr.NewPage(store, selectableElems),
 	}
 }
 
-func (this *FirstPage) View() string {
+func (this *AfterDeathPage) View() string {
 	content := lipgloss.JoinVertical(
 		lipgloss.Center,
 		this.SelectableElemsToViews()...,
@@ -42,4 +40,4 @@ func (this *FirstPage) View() string {
 	return flex
 }
 
-var _ game_abstr.IPage = (*FirstPage)(nil)
+var _ game_abstr.IPage = (*AfterDeathPage)(nil)

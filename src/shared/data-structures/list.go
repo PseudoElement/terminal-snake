@@ -11,6 +11,10 @@ type ListNode[T any] struct {
 }
 
 func NewList[T any](head *ListNode[T]) List[T] {
+	if head == nil {
+		panic("NewList: head should be not nil value")
+	}
+
 	list := List[T]{head: head}
 	list.setSize()
 
@@ -36,10 +40,6 @@ func (this *List[T]) Head() *ListNode[T] {
 }
 
 func (this *List[T]) Tail() *ListNode[T] {
-	if this.head == nil {
-		return this.head
-	}
-
 	next := this.head
 	for next.Next != nil {
 		next = next.Next

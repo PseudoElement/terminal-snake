@@ -9,7 +9,7 @@ func NewMediumLevel() *MediumLevel {
 	return &MediumLevel{}
 }
 
-func (this *MediumLevel) LoopDelayMs() int16 {
+func (this *MediumLevel) LoopDelayMs() int64 {
 	return 500
 }
 

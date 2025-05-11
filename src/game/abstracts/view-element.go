@@ -10,9 +10,9 @@ type BaseViewElement struct {
 	teaElement lipgloss.Style
 }
 
-func NewBaseViewElement(teaElement lipgloss.Style) BaseViewElement {
+func NewBaseViewElement(teaElement lipgloss.Style) *BaseViewElement {
 	id := uuid.New()
-	return BaseViewElement{
+	return &BaseViewElement{
 		id:         id.String(),
 		teaElement: teaElement,
 	}

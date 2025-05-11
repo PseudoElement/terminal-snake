@@ -2,9 +2,10 @@ package consts
 
 // app store keys
 const (
-	WIDTH      = "WIDTH"
-	HEIGHT     = "HEIGHT"
-	DIFFICULTY = "DIFFICULTY"
+	WIDTH          = "WIDTH"
+	HEIGHT         = "HEIGHT"
+	DIFFICULTY     = "DIFFICULTY"
+	MOVE_DIRECTION = "MOVE_DIRECTION"
 )
 
 // snake movement directions
