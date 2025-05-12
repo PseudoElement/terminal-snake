@@ -36,8 +36,8 @@ func (this *HardLevel) IsSnakeDied(scene game_abstr.IGameScene) bool {
 
 	return snakeHead.Coords().X < 0 ||
 		snakeHead.Coords().Y < 0 ||
-		snakeHead.Coords().X > scene.SceneSize().Width ||
-		snakeHead.Coords().Y > scene.SceneSize().Height
+		snakeHead.Coords().X >= scene.SceneSize().Width ||
+		snakeHead.Coords().Y >= scene.SceneSize().Height
 }
 
 var _ game_abstr.IDiffLevel = (*HardLevel)(nil)
