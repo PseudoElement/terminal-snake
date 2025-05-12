@@ -44,6 +44,10 @@ func (this *Snake) Body() data_structs.List[game_abstr.ICell] {
 	return this.body
 }
 
+// 1. next = {val: 1, next: {}}
+// 2. next = {val: 2, next: {}}
+// 3. next = {val: 3, next: {}}
+// 4. next = {val: 4, next: nil}
 func (this *Snake) Find(value game_abstr.CellCoords) (snakeCell game_abstr.ICell, isFound bool) {
 	next := this.body.Head()
 	for next != nil {

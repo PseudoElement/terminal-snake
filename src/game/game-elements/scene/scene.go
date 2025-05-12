@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"fmt"
 	"math"
 	"math/rand/v2"
 
@@ -85,6 +86,12 @@ func (this *GameScene) RemoveFood() {
 }
 
 func (this *GameScene) View() string {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Scene.View(). Error:\n", r)
+		}
+	}()
+
 	rowsJoins := make([]string, 0, len(this.gameZone)-1)
 	for y, row := range this.gameZone {
 		cellsToViews := make([]string, 0, len(this.gameZone[0])-1)

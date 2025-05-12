@@ -1,6 +1,7 @@
 package game_controller
 
 import (
+	"fmt"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -46,6 +47,12 @@ func (this *GameController) RunGame() {
 	this.stop = false
 
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered. Error:\n", r)
+			}
+		}()
+
 		for !this.gameScene.Snake().IsDead() && !this.stop {
 			diffLevel := this.store.Get(consts.DIFFICULTY).(game_abstr.IDiffLevel)
 			delay := time.Duration(diffLevel.LoopDelayMs())
@@ -62,7 +69,7 @@ func (this *GameController) RunGame() {
 			if this.gameScene.DoesSnakeTakeFood() {
 				snake.Eat(this.gameScene.Food())
 				this.IncrementScore()
-				this.gameScene.RemoveFood()
+				// this.gameScene.RemoveFood()
 				this.gameScene.SpawnFood()
 			}
 

@@ -25,7 +25,7 @@ func (this *DifficultyBtn) NextPage(store *store.Store) game_abstr.IPage {
 }
 
 func (this *DifficultyBtn) View() string {
-	return this.TeaElement().Render("Difficulty level")
+	return this.TeaElement().Render("Difficulty levels")
 }
 
 func (this *DifficultyBtn) Select() {
