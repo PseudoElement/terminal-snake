@@ -14,8 +14,6 @@ type QuitBtn struct {
 
 func NewQuitBtn() *QuitBtn {
 	teaElement := bluredBtn
-	teaElement.Width(20)
-
 	btn := &QuitBtn{
 		SelectableElement: game_abstr.NewSelectableElement(teaElement),
 	}
@@ -36,16 +34,12 @@ func (this *QuitBtn) View() string {
 
 func (this *QuitBtn) Select() {
 	selectedTeaElem := selectedBtn
-	selectedTeaElem.Width(20)
-
 	this.SetSelected(true)
 	this.UpdateTeaElement(selectedTeaElem)
 }
 
 func (this *QuitBtn) Blur() {
 	bluredTeaElem := bluredBtn
-	bluredTeaElem.Width(20)
-
 	this.SetSelected(false)
 	this.UpdateTeaElement(bluredTeaElem)
 }

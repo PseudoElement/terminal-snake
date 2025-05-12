@@ -10,7 +10,7 @@ func NewEasyLevel() *EasyLevel {
 }
 
 func (this *EasyLevel) LoopDelayMs() int64 {
-	return 500
+	return 200
 }
 
 func (this *EasyLevel) IsSnakeDied() bool {

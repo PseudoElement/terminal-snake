@@ -10,7 +10,7 @@ func NewHardLevel() *HardLevel {
 }
 
 func (this *HardLevel) LoopDelayMs() int64 {
-	return 500
+	return 50
 }
 
 func (this *HardLevel) IsSnakeDied() bool {

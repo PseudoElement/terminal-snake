@@ -9,6 +9,7 @@ import (
 
 type FirstPage struct {
 	*game_abstr.Page
+	store *store.Store
 }
 
 func NewFirstPage(store *store.Store) *FirstPage {
@@ -20,7 +21,8 @@ func NewFirstPage(store *store.Store) *FirstPage {
 	selectableElems[0].Select()
 
 	return &FirstPage{
-		Page: game_abstr.NewPage(store, selectableElems),
+		Page:  game_abstr.NewPage(store, selectableElems),
+		store: store,
 	}
 }
 
@@ -41,5 +43,7 @@ func (this *FirstPage) View() string {
 
 	return flex
 }
+
+func (this *FirstPage) OnInit() {}
 
 var _ game_abstr.IPage = (*FirstPage)(nil)

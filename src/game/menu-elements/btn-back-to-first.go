@@ -3,27 +3,25 @@ package menu_elements
 import (
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 type BackToMenuBtn struct {
 	*game_abstr.SelectableElement
-	closePage func()
 }
 
-func NewBackToMenuBtn(closePage func()) *BackToMenuBtn {
+func NewBackToMenuBtn() *BackToMenuBtn {
 	teaElement := bluredBtn
-	teaElement.Width(20)
-
 	btn := &BackToMenuBtn{
 		SelectableElement: game_abstr.NewSelectableElement(teaElement),
-		closePage:         closePage,
 	}
 
 	return btn
 }
 
 func (this *BackToMenuBtn) Action(store *store.Store) {
-	this.closePage()
+	store.Set(consts.SCORE, 0)
+	store.Set(consts.MOVE_DIRECTION, consts.RIGHT)
 }
 
 func (this *BackToMenuBtn) NextPage(store *store.Store) game_abstr.IPage {
@@ -36,16 +34,12 @@ func (this *BackToMenuBtn) View() string {
 
 func (this *BackToMenuBtn) Select() {
 	selectedTeaElem := selectedBtn
-	selectedTeaElem.Width(20)
-
 	this.SetSelected(true)
 	this.UpdateTeaElement(selectedTeaElem)
 }
 
 func (this *BackToMenuBtn) Blur() {
 	bluredTeaElem := bluredBtn
-	bluredTeaElem.Width(20)
-
 	this.SetSelected(false)
 	this.UpdateTeaElement(bluredTeaElem)
 }

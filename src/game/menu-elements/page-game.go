@@ -1,6 +1,7 @@
 package menu_elements
 
 import (
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 	exitinfo "github.com/pseudoelement/terminal-snake/src/game/game-elements/exit-info"
@@ -15,14 +16,16 @@ type GamePage struct {
 	gameScene game_abstr.IGameScene
 	score     *score.Score
 	exitInfo  *exitinfo.ExitInfo
+	store     *store.Store
 }
 
 func NewGamePage(store *store.Store) *GamePage {
 	return &GamePage{
 		Page:      game_abstr.NewPage(store, make([]game_abstr.ISelectableElement, 0)),
 		gameScene: scene.NewGameScene(store),
-		score:     score.NewScore(),
+		score:     score.NewScore(store),
 		exitInfo:  exitinfo.NewExitInfo(),
+		store:     store,
 	}
 }
 
@@ -42,6 +45,11 @@ func (this *GamePage) View() string {
 	)
 
 	return flex
+}
+
+func (this *GamePage) OnInit() {
+	teaProgram := this.store.Get(consts.PROGRAM).(*tea.Program)
+	go teaProgram.Send(game_abstr.RunGameTrigger{})
 }
 
 func (this *GamePage) GameScene() game_abstr.IGameScene {

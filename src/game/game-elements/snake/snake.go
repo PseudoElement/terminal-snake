@@ -68,16 +68,12 @@ func (this *Snake) Move(direction string) {
 		X: this.body.Head().Val.Coords().X + moveDir.X,
 		Y: this.body.Head().Val.Coords().Y + moveDir.Y,
 	}
-	for listNode.Next != nil {
+	for listNode != nil {
 		prevCoords = listNode.Val.Coords()
 		listNode.Val.SetCoords(nextCoords)
 		nextCoords = prevCoords
 
 		listNode = listNode.Next
-	}
-
-	if this.scene.IsSnakeOutScene() {
-		this.Die()
 	}
 }
 
@@ -89,16 +85,16 @@ func (this *Snake) Die() {
 	this.dead = true
 }
 
-func (this *Snake) Eat(c *cell.Cell, scene game_abstr.IGameScene) {
+func (this *Snake) Eat(c game_abstr.ICell) {
 	tail := this.body.Tail()
 	preTail := this.body.PreTail()
 	tCoords := tail.Val.Coords()
 	ptCoords := preTail.Val.Coords()
 
 	newTailCoord := this.defineNewTailCoord(tCoords, ptCoords)
-	c.SetCoords(newTailCoord)
+	newTailCell := cell.NewCell(cell.BlueCell, newTailCoord)
 
-	this.body.Push(c)
+	this.body.Push(newTailCell)
 }
 
 func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords game_abstr.CellCoords) game_abstr.CellCoords {
@@ -163,7 +159,7 @@ func (this *Snake) initBody() {
 	yCoord := this.scene.SceneSize().Height / 2
 
 	firstCell := &data_structs.ListNode[game_abstr.ICell]{
-		Val: cell.NewCell(cell.BlueCell, game_abstr.CellCoords{
+		Val: cell.NewCell(cell.PinkCell, game_abstr.CellCoords{
 			X: xCoord,
 			Y: yCoord,
 		}),
@@ -181,3 +177,5 @@ func (this *Snake) initBody() {
 
 	this.body = body
 }
+
+var _ game_abstr.ISnake = (*Snake)(nil)

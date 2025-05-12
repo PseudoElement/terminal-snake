@@ -49,6 +49,8 @@ type IPage interface {
 	View() string
 
 	Store() *store.Store
+
+	OnInit()
 }
 
 type IGamePage interface {

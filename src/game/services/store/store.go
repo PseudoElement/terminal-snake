@@ -13,7 +13,7 @@ func NewStore() *Store {
 	return &Store{store: make(map[string]any, 20)}
 }
 
-func (this *Store) Add(key string, value any) {
+func (this *Store) Set(key string, value any) {
 	this.mu.Lock()
 	this.store[key] = value
 	this.mu.Unlock()

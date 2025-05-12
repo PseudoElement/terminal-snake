@@ -21,7 +21,7 @@ func NewEasyBtn() *EasyBtn {
 }
 
 func (this *EasyBtn) Action(store *store.Store) {
-	store.Add(consts.DIFFICULTY, diff_levels.NewEasyLevel())
+	store.Set(consts.DIFFICULTY, diff_levels.NewEasyLevel())
 }
 
 func (this *EasyBtn) NextPage(store *store.Store) game_abstr.IPage {

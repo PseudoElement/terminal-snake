@@ -21,7 +21,7 @@ func NewHardBtn() *HardBtn {
 }
 
 func (this *HardBtn) Action(store *store.Store) {
-	store.Add(consts.DIFFICULTY, diff_levels.NewHardLevel())
+	store.Set(consts.DIFFICULTY, diff_levels.NewHardLevel())
 }
 
 func (this *HardBtn) NextPage(store *store.Store) game_abstr.IPage {

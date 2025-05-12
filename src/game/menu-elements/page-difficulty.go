@@ -9,6 +9,7 @@ import (
 
 type DifficultyPage struct {
 	*game_abstr.Page
+	store *store.Store
 }
 
 func NewDifficultyPage(store *store.Store) *DifficultyPage {
@@ -20,7 +21,8 @@ func NewDifficultyPage(store *store.Store) *DifficultyPage {
 	selectableElems[0].Select()
 
 	return &DifficultyPage{
-		Page: game_abstr.NewPage(store, selectableElems),
+		Page:  game_abstr.NewPage(store, selectableElems),
+		store: store,
 	}
 }
 
@@ -41,5 +43,7 @@ func (this *DifficultyPage) View() string {
 
 	return flex
 }
+
+func (this *DifficultyPage) OnInit() {}
 
 var _ game_abstr.IPage = (*DifficultyPage)(nil)

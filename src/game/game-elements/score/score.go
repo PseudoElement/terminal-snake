@@ -4,30 +4,25 @@ import (
 	"fmt"
 
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	"github.com/pseudoelement/terminal-snake/src/game/services/store"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 type Score struct {
 	*game_abstr.BaseViewElement
-	score int
+	store *store.Store
 }
 
-func NewScore() *Score {
+func NewScore(store *store.Store) *Score {
 	return &Score{
 		BaseViewElement: game_abstr.NewBaseViewElement(scoreTab),
-		score:           0,
+		store:           store,
 	}
 }
 
-func (this *Score) Increment() {
-	this.score++
-}
-
-func (this *Score) Decrement() {
-	this.score--
-}
-
 func (this *Score) View() string {
-	text := fmt.Sprintf("Score: %d", this.score)
+	score := this.store.Get(consts.SCORE).(int)
+	text := fmt.Sprintf("Score: %d", score)
 	return this.TeaElement().Render(text)
 }
 

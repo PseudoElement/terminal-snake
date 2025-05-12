@@ -10,7 +10,7 @@ func NewMediumLevel() *MediumLevel {
 }
 
 func (this *MediumLevel) LoopDelayMs() int64 {
-	return 500
+	return 100
 }
 
 func (this *MediumLevel) IsSnakeDied() bool {

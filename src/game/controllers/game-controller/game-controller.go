@@ -3,6 +3,7 @@ package game_controller
 import (
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
 	menu_elements "github.com/pseudoelement/terminal-snake/src/game/menu-elements"
 	"github.com/pseudoelement/terminal-snake/src/game/services/store"
@@ -10,59 +11,77 @@ import (
 )
 
 type GameController struct {
-	store           *store.Store
-	difficultyLevel game_abstr.IDiffLevel
-	gameScene       game_abstr.IGameScene
-	showDeathScreen bool
+	store      *store.Store
+	teaProgram *tea.Program
+	stop       bool
+	gamePage   game_abstr.IGamePage
+	gameScene  game_abstr.IGameScene
 }
 
 func NewGameController(store *store.Store) *GameController {
 	gameController := &GameController{
-		store:           store,
-		difficultyLevel: store.Get(consts.DIFFICULTY).(game_abstr.IDiffLevel),
-		showDeathScreen: false,
+		store:      store,
+		teaProgram: store.Get(consts.PROGRAM).(*tea.Program),
+		stop:       false,
+		gamePage:   nil,
 	}
 
 	return gameController
 }
 
-func (this *GameController) SetShowDeathScreen(show bool) {
-	this.showDeathScreen = show
-}
-
-func (this *GameController) ShowDeathScreen() bool {
-	return this.showDeathScreen
-}
-
-func (this *GameController) SetGameScene(gameScene game_abstr.IGameScene) {
-	this.gameScene = gameScene
-}
-
-func (this *GameController) GameScene() game_abstr.IGameScene {
-	return this.gameScene
+func (this *GameController) SetGamePage(gamePage game_abstr.IGamePage) {
+	this.gamePage = gamePage
+	this.gameScene = gamePage.GameScene()
 }
 
 func (this *GameController) NextPage() game_abstr.IPage {
-	return menu_elements.NewAfterDeathPage(this.store, func() {
-		this.SetShowDeathScreen(false)
-	})
+	return menu_elements.NewAfterDeathPage(this.store)
 }
 
-// fix updates view only on button click
-func (this *GameController) RunGameLoop() {
-	go func() {
-		for {
-			if this.gameScene.Snake().IsDead() {
-				this.SetShowDeathScreen(true)
-				return
-			}
+func (this *GameController) StopGame() {
+	this.stop = true
+}
 
-			delay := time.Duration(this.difficultyLevel.LoopDelayMs())
+func (this *GameController) RunGame() {
+	this.stop = false
+
+	go func() {
+		for !this.gameScene.Snake().IsDead() && !this.stop {
+			diffLevel := this.store.Get(consts.DIFFICULTY).(game_abstr.IDiffLevel)
+			delay := time.Duration(diffLevel.LoopDelayMs())
 			time.Sleep(delay * time.Millisecond)
 
 			moveDir := this.store.Get(consts.MOVE_DIRECTION).(game_abstr.MoveDirection)
 			snake := this.gameScene.Snake()
 			snake.Move(moveDir)
+
+			if this.gameScene.IsSnakeOutScene() {
+				snake.Die()
+				break
+			}
+			if this.gameScene.DoesSnakeTakeFood() {
+				snake.Eat(this.gameScene.Food())
+				this.IncrementScore()
+				this.gameScene.RemoveFood()
+				this.gameScene.SpawnFood()
+			}
+
+			this.teaProgram.Send(game_abstr.UpdateTrigger{})
 		}
+
+		if this.gameScene.Snake().IsDead() {
+			this.teaProgram.Send(game_abstr.ShowDeathScreenTrigger{})
+		}
+		this.StopGame()
 	}()
+}
+
+func (this *GameController) IncrementScore() {
+	currScore := this.store.Get(consts.SCORE).(int)
+	currScore++
+	this.store.Set(consts.SCORE, currScore)
+}
+
+func (this *GameController) ResetScore() {
+	this.store.Set(consts.SCORE, 0)
 }

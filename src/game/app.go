@@ -19,12 +19,23 @@ type SnakeGameProgram struct {
 }
 
 func NewSnakeGameProgram() SnakeGameProgram {
+	store := store.NewStore()
+
+	store.Set(consts.HEIGHT, 100)
+	store.Set(consts.WIDTH, 15)
+	store.Set(consts.DIFFICULTY, diff_levels.NewMediumLevel())
+	store.Set(consts.MOVE_DIRECTION, consts.RIGHT)
+	store.Set(consts.SCORE, 0)
+
+	snakeGame := &SnakeGame{store: store}
 	p := tea.NewProgram(
-		&SnakeGame{},
+		snakeGame,
 		tea.WithAltScreen(),
 		// tea.WithMouseCellMotion(),
 		tea.WithFPS(30),
 	)
+
+	store.Set(consts.PROGRAM, p)
 
 	tea.ShowCursor()
 
@@ -47,13 +58,6 @@ type SnakeGame struct {
 }
 
 func (this *SnakeGame) Init() tea.Cmd {
-	this.store = store.NewStore()
-
-	this.store.Add(consts.HEIGHT, 100)
-	this.store.Add(consts.WIDTH, 15)
-	this.store.Add(consts.DIFFICULTY, diff_levels.NewEasyLevel())
-	this.store.Add(consts.MOVE_DIRECTION, consts.RIGHT)
-
 	firstPage := menu_elements.NewFirstPage(this.store)
 	selectableElems := firstPage.SelectableElems()
 	firstSelectedElem := selectableElems[0]
@@ -67,21 +71,31 @@ func (this *SnakeGame) Init() tea.Cmd {
 
 // VIEW
 func (this *SnakeGame) View() string {
-	if this.gameController != nil && this.gameController.ShowDeathScreen() {
-		adp := menu_elements.NewAfterDeathPage(this.store, func() {
-			this.gameController.SetShowDeathScreen(false)
-		})
-		this.menuController.SetPage(adp)
-		return adp.View()
-	}
 	return this.menuController.Page().View()
 }
 
 // UPDATE
 func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg.(type) {
+	case game_abstr.UpdateTrigger:
+		return this, nil
+
+	case game_abstr.ShowDeathScreenTrigger:
+		afterDeathPage := menu_elements.NewAfterDeathPage(this.store)
+		this.menuController.SetPage(afterDeathPage)
+		return this, nil
+
+	case game_abstr.RunGameTrigger:
+		gamePage, ok := this.menuController.Page().(game_abstr.IGamePage)
+		if ok {
+			this.gameController.SetGamePage(gamePage)
+			this.gameController.RunGame()
+		}
+		return this, nil
+
 	case tea.KeyMsg:
 		switch msg.(tea.KeyMsg).String() {
+
 		case "up":
 			if this.menuController.Page().HasSelectableElems() {
 				this.menuController.SelectPrev()
@@ -100,32 +114,32 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if ok {
 					nextPage := redirectableEl.NextPage(this.store)
 					this.menuController.SetPage(nextPage)
-					gamePage, ok := nextPage.(game_abstr.IGamePage)
-					if ok {
-						this.gameController.SetGameScene(gamePage.GameScene())
-						this.gameController.RunGameLoop()
-					}
+					nextPage.OnInit()
 				}
 			}
 			return this, nil
 		case "esc":
 			firstPage := menu_elements.NewFirstPage(this.store)
 			this.menuController.SetPage(firstPage)
+			this.gameController.StopGame()
+			this.gameController.ResetScore()
+			this.store.Set(consts.MOVE_DIRECTION, consts.RIGHT)
+
 			return this, nil
 		case "ctrl+c":
 			return this, tea.Quit
-
+			// @FIX direction after death
 		case "w":
-			this.store.Add(consts.MOVE_DIRECTION, consts.UP)
+			this.store.Set(consts.MOVE_DIRECTION, consts.UP)
 			return this, nil
 		case "s":
-			this.store.Add(consts.MOVE_DIRECTION, consts.DOWN)
+			this.store.Set(consts.MOVE_DIRECTION, consts.DOWN)
 			return this, nil
 		case "a":
-			this.store.Add(consts.MOVE_DIRECTION, consts.LEFT)
+			this.store.Set(consts.MOVE_DIRECTION, consts.LEFT)
 			return this, nil
 		case "d":
-			this.store.Add(consts.MOVE_DIRECTION, consts.RIGHT)
+			this.store.Set(consts.MOVE_DIRECTION, consts.RIGHT)
 			return this, nil
 		}
 
@@ -139,8 +153,8 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		width := msg.(tea.WindowSizeMsg).Width
 		height := msg.(tea.WindowSizeMsg).Height
 
-		this.store.Add(consts.WIDTH, width)
-		this.store.Add(consts.HEIGHT, height)
+		this.store.Set(consts.WIDTH, width)
+		this.store.Set(consts.HEIGHT, height)
 	}
 
 	return this, nil

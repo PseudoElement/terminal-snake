@@ -6,6 +6,8 @@ const (
 	HEIGHT         = "HEIGHT"
 	DIFFICULTY     = "DIFFICULTY"
 	MOVE_DIRECTION = "MOVE_DIRECTION"
+	PROGRAM        = "PROGRAM"
+	SCORE          = "SCORE"
 )
 
 // snake movement directions

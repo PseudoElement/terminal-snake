@@ -28,11 +28,19 @@ type IGameScene interface {
 
 	IsSnakeOutScene() bool
 
+	DoesSnakeTakeFood() bool
+
 	View() string
 
 	SceneSize() SceneSize
 
 	Snake() ISnake
+
+	SpawnFood()
+
+	RemoveFood()
+
+	Food() ICell
 }
 
 type ISnake interface {
@@ -41,6 +49,10 @@ type ISnake interface {
 	Find(value CellCoords) (snakeCell ICell, isFound bool)
 
 	Move(direction MoveDirection)
+
+	Die()
+
+	Eat(c ICell)
 
 	IsDead() bool
 }

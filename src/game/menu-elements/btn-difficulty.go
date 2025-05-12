@@ -11,8 +11,6 @@ type DifficultyBtn struct {
 
 func NewDifficultyBtn() *DifficultyBtn {
 	teaElement := bluredBtn
-	teaElement.Width(30)
-
 	btn := &DifficultyBtn{
 		SelectableElement: game_abstr.NewSelectableElement(teaElement),
 	}
@@ -32,16 +30,12 @@ func (this *DifficultyBtn) View() string {
 
 func (this *DifficultyBtn) Select() {
 	selectedTeaElem := selectedBtn
-	selectedTeaElem.Width(30)
-
 	this.SetSelected(true)
 	this.UpdateTeaElement(selectedTeaElem)
 }
 
 func (this *DifficultyBtn) Blur() {
 	bluredTeaElem := bluredBtn
-	bluredTeaElem.Width(30)
-
 	this.SetSelected(false)
 	this.UpdateTeaElement(bluredTeaElem)
 }

@@ -21,7 +21,7 @@ func NewMediumBtn() *MediumBtn {
 }
 
 func (this *MediumBtn) Action(store *store.Store) {
-	store.Add(consts.DIFFICULTY, diff_levels.NewMediumLevel())
+	store.Set(consts.DIFFICULTY, diff_levels.NewMediumLevel())
 }
 
 func (this *MediumBtn) NextPage(store *store.Store) game_abstr.IPage {
