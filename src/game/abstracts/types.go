@@ -62,5 +62,5 @@ type IGamePage interface {
 type IDiffLevel interface {
 	LoopDelayMs() int64
 
-	IsSnakeDied() bool
+	IsSnakeDied(scene IGameScene) bool
 }

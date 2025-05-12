@@ -55,7 +55,7 @@ func (this *GameController) RunGame() {
 			snake := this.gameScene.Snake()
 			snake.Move(moveDir)
 
-			if this.gameScene.IsSnakeOutScene() {
+			if diffLevel.IsSnakeDied(this.gameScene) {
 				snake.Die()
 				break
 			}

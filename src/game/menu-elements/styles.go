@@ -19,3 +19,12 @@ var (
 			Height(1).
 			Width(20)
 )
+
+var (
+	textRules = lipgloss.NewStyle().
+		Background(lipgloss.Color("#d9d5c1")).
+		Foreground(lipgloss.Color("#078c3f")).
+		Padding(0, 2).
+		MarginBottom(1).
+		Align(lipgloss.Left, lipgloss.Center)
+)

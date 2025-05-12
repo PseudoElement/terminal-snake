@@ -7,30 +7,29 @@ import (
 	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
-type FirstPage struct {
+type RulesPage struct {
 	*game_abstr.Page
 	store *store.Store
 }
 
-func NewFirstPage(store *store.Store) *FirstPage {
+func NewRulesPage(store *store.Store) *RulesPage {
 	selectableElems := []game_abstr.ISelectableElement{
-		NewPlayBtn(),
-		NewDifficultyBtn(),
-		NewRulesBtn(),
-		NewQuitBtn(),
+		NewBackToMenuBtn(),
 	}
 	selectableElems[0].Select()
 
-	return &FirstPage{
+	return &RulesPage{
 		Page:  game_abstr.NewPage(store, selectableElems),
 		store: store,
 	}
 }
 
-func (this *FirstPage) View() string {
-	content := lipgloss.JoinVertical(
+func (this *RulesPage) View() string {
+	content := append([]string{NewTextRules().View()}, this.SelectableElemsToViews()...)
+
+	joinVertical := lipgloss.JoinVertical(
 		lipgloss.Center,
-		this.SelectableElemsToViews()...,
+		content...,
 	)
 
 	w := this.Store().Get(consts.WIDTH).(int)
@@ -39,12 +38,12 @@ func (this *FirstPage) View() string {
 	flex := lipgloss.Place(
 		w, h/2,
 		lipgloss.Center, lipgloss.Bottom,
-		content,
+		joinVertical,
 	)
 
 	return flex
 }
 
-func (this *FirstPage) OnInit() {}
+func (this *RulesPage) OnInit() {}
 
-var _ game_abstr.IPage = (*FirstPage)(nil)
+var _ game_abstr.IPage = (*RulesPage)(nil)
