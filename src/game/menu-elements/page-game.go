@@ -15,7 +15,7 @@ type GamePage struct {
 	*game_abstr.Page
 	gameScene game_abstr.IGameScene
 	score     *score.Score
-	exitInfo  *exitinfo.ExitInfo
+	exitInfo  game_abstr.IViewElement
 	store     *store.Store
 }
 

@@ -60,7 +60,9 @@ type IGamePage interface {
 }
 
 type IDiffLevel interface {
-	LoopDelayMs() int64
+	SnakeSpeedMs() int64
 
 	IsSnakeDied(scene IGameScene) bool
+
+	Name() string
 }

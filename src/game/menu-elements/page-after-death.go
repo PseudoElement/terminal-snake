@@ -11,7 +11,9 @@ import (
 
 type AfterDeathPage struct {
 	*game_abstr.Page
-	store *store.Store
+	store          *store.Store
+	textDifficulty game_abstr.IViewElement
+	textDead       game_abstr.IViewElement
 }
 
 func NewAfterDeathPage(store *store.Store) *AfterDeathPage {
@@ -20,9 +22,14 @@ func NewAfterDeathPage(store *store.Store) *AfterDeathPage {
 	}
 	selectableElems[0].Select()
 
+	difficulty := NewTextDifficulty(store)
+	difficulty.UpdateTeaElement(textDifficulty.MarginLeft(1))
+
 	return &AfterDeathPage{
-		Page:  game_abstr.NewPage(store, selectableElems),
-		store: store,
+		Page:           game_abstr.NewPage(store, selectableElems),
+		store:          store,
+		textDifficulty: difficulty,
+		textDead:       dead_text.NewDeadText(),
 	}
 }
 
@@ -39,7 +46,7 @@ func (this *AfterDeathPage) View() string {
 
 	firstRow := lipgloss.JoinVertical(
 		lipgloss.Left,
-		dead_text.NewDeadText().View(), scoreEl.View(),
+		this.textDead.View(), this.textDifficulty.View(), scoreEl.View(),
 	)
 	content := append([]string{firstRow}, this.SelectableElemsToViews()...)
 

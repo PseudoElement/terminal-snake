@@ -117,8 +117,7 @@ func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords game_abs
 		priorityDirection = MoveDir{X: 0, Y: -1}
 	}
 
-	var checkNearestCellAvailable func(tailCoord game_abstr.CellCoords, moveDir MoveDir) (newTailCoord game_abstr.CellCoords, isAvailable bool)
-	checkNearestCellAvailable = func(tailCoord game_abstr.CellCoords, moveDir MoveDir) (newTailCoord game_abstr.CellCoords, isAvailable bool) {
+	checkNearestCellAvailable := func(tailCoord game_abstr.CellCoords, moveDir MoveDir) (newTailCoord game_abstr.CellCoords, isAvailable bool) {
 		newCoord := game_abstr.CellCoords{
 			X: tailCoord.X + moveDir.X,
 			Y: tailCoord.Y + moveDir.Y,
@@ -137,7 +136,7 @@ func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords game_abs
 		return newCoord, available
 	}
 
-	newTailCoord, available := checkNearestCellAvailable(prevPreTailCoords, priorityDirection)
+	newTailCoord, available := checkNearestCellAvailable(prevTailCoords, priorityDirection)
 	if available {
 		return newTailCoord
 	}
@@ -146,7 +145,7 @@ func (this *Snake) defineNewTailCoord(prevTailCoords, prevPreTailCoords game_abs
 		if moveDir == priorityDirection {
 			continue
 		}
-		newTailCoord, available := checkNearestCellAvailable(prevPreTailCoords, priorityDirection)
+		newTailCoord, available := checkNearestCellAvailable(prevTailCoords, priorityDirection)
 		if available {
 			return newTailCoord
 		}

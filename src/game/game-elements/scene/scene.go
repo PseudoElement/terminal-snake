@@ -17,7 +17,7 @@ import (
 type GameScene struct {
 	sceneSize game_abstr.SceneSize
 	store     *store.Store
-	snake     *snake.Snake
+	snake     game_abstr.ISnake
 	gameZone  [][]game_abstr.ICell
 	food      game_abstr.ICell
 }
@@ -61,16 +61,6 @@ func (this *GameScene) DoesSnakeTakeFood() bool {
 	foodCoords := this.food.Coords()
 
 	return headCoords.X == foodCoords.X && headCoords.Y == foodCoords.Y
-}
-
-func (this *GameScene) IsSnakeOutScene() bool {
-	snakeBody := this.snake.Body()
-	snakeHead := snakeBody.Head().Val
-
-	return snakeHead.Coords().X < 0 ||
-		snakeHead.Coords().Y < 0 ||
-		snakeHead.Coords().X > this.sceneSize.Width ||
-		snakeHead.Coords().Y > this.sceneSize.Height
 }
 
 func (this *GameScene) SpawnFood() {

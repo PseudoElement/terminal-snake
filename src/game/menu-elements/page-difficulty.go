@@ -9,7 +9,8 @@ import (
 
 type DifficultyPage struct {
 	*game_abstr.Page
-	store *store.Store
+	store          *store.Store
+	textDifficulty game_abstr.IViewElement
 }
 
 func NewDifficultyPage(store *store.Store) *DifficultyPage {
@@ -21,15 +22,18 @@ func NewDifficultyPage(store *store.Store) *DifficultyPage {
 	selectableElems[0].Select()
 
 	return &DifficultyPage{
-		Page:  game_abstr.NewPage(store, selectableElems),
-		store: store,
+		Page:           game_abstr.NewPage(store, selectableElems),
+		store:          store,
+		textDifficulty: NewTextDifficulty(store),
 	}
 }
 
 func (this *DifficultyPage) View() string {
-	content := lipgloss.JoinVertical(
+	content := append([]string{this.textDifficulty.View()}, this.SelectableElemsToViews()...)
+
+	joinVertical := lipgloss.JoinVertical(
 		lipgloss.Center,
-		this.SelectableElemsToViews()...,
+		content...,
 	)
 
 	w := this.Store().Get(consts.WIDTH).(int)
@@ -38,7 +42,7 @@ func (this *DifficultyPage) View() string {
 	flex := lipgloss.Place(
 		w, h/2,
 		lipgloss.Center, lipgloss.Bottom,
-		content,
+		joinVertical,
 	)
 
 	return flex

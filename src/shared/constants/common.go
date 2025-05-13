@@ -17,3 +17,10 @@ const (
 	RIGHT = "RIGHT"
 	LEFT  = "LEFT"
 )
+
+// difficulty levels
+const (
+	EASY   = "EASY"
+	MEDIUM = "MEDIUM"
+	HARD   = "HARD"
+)

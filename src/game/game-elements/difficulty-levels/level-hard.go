@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 type HardLevel struct {
@@ -13,8 +14,12 @@ func NewHardLevel() *HardLevel {
 	return &HardLevel{}
 }
 
-func (this *HardLevel) LoopDelayMs() int64 {
+func (this *HardLevel) SnakeSpeedMs() int64 {
 	return 50
+}
+
+func (this *HardLevel) Name() string {
+	return consts.HARD
 }
 
 func (this *HardLevel) IsSnakeDied(scene game_abstr.IGameScene) bool {
@@ -23,7 +28,7 @@ func (this *HardLevel) IsSnakeDied(scene game_abstr.IGameScene) bool {
 
 	visited := make(map[string]bool, snakeBody.Size())
 	next := snakeBody.Head()
-	for next.Next != nil {
+	for next != nil {
 		key := fmt.Sprintf("%v_%v", next.Val.Coords().X, next.Val.Coords().Y)
 		_, crossed := visited[key]
 		if crossed {

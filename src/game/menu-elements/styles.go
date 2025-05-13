@@ -22,9 +22,16 @@ var (
 
 var (
 	textRules = lipgloss.NewStyle().
-		Background(lipgloss.Color("#d9d5c1")).
-		Foreground(lipgloss.Color("#078c3f")).
-		Padding(0, 2).
-		MarginBottom(1).
-		Align(lipgloss.Left, lipgloss.Center)
+			Background(lipgloss.Color("#d9d5c1")).
+			Foreground(lipgloss.Color("#078c3f")).
+			Padding(0, 2).
+			MarginBottom(1).
+			Align(lipgloss.Left, lipgloss.Center)
+
+	textDifficulty = lipgloss.NewStyle().
+			Background(lipgloss.Color("#d9d5c1")).
+			Foreground(lipgloss.Color("#078c3f")).
+			Padding(0, 1).
+			MarginBottom(1).
+			Align(lipgloss.Center, lipgloss.Center)
 )

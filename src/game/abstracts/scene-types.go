@@ -26,8 +26,6 @@ type ICell interface {
 type IGameScene interface {
 	GameZone() [][]ICell
 
-	IsSnakeOutScene() bool
-
 	DoesSnakeTakeFood() bool
 
 	View() string

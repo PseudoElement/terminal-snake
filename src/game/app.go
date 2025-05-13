@@ -128,17 +128,16 @@ func (this *SnakeGame) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return this, nil
 		case "ctrl+c":
 			return this, tea.Quit
-			// @FIX direction after death
-		case "w":
+		case "w", "W", "ц", "Ц":
 			this.store.Set(consts.MOVE_DIRECTION, consts.UP)
 			return this, nil
-		case "s":
+		case "s", "S", "ы", "Ы":
 			this.store.Set(consts.MOVE_DIRECTION, consts.DOWN)
 			return this, nil
-		case "a":
+		case "a", "A", "ф", "Ф":
 			this.store.Set(consts.MOVE_DIRECTION, consts.LEFT)
 			return this, nil
-		case "d":
+		case "d", "D", "в", "В":
 			this.store.Set(consts.MOVE_DIRECTION, consts.RIGHT)
 			return this, nil
 		}

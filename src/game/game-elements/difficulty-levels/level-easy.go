@@ -1,6 +1,9 @@
 package diff_levels
 
-import game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+import (
+	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
+)
 
 type EasyLevel struct {
 }
@@ -9,8 +12,12 @@ func NewEasyLevel() *EasyLevel {
 	return &EasyLevel{}
 }
 
-func (this *EasyLevel) LoopDelayMs() int64 {
+func (this *EasyLevel) SnakeSpeedMs() int64 {
 	return 170
+}
+
+func (this *EasyLevel) Name() string {
+	return consts.EASY
 }
 
 func (this *EasyLevel) IsSnakeDied(scene game_abstr.IGameScene) bool {

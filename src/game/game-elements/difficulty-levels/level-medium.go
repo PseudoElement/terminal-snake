@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	game_abstr "github.com/pseudoelement/terminal-snake/src/game/abstracts"
+	consts "github.com/pseudoelement/terminal-snake/src/shared/constants"
 )
 
 type MediumLevel struct {
@@ -13,8 +14,12 @@ func NewMediumLevel() *MediumLevel {
 	return &MediumLevel{}
 }
 
-func (this *MediumLevel) LoopDelayMs() int64 {
+func (this *MediumLevel) SnakeSpeedMs() int64 {
 	return 100
+}
+
+func (this *MediumLevel) Name() string {
+	return consts.MEDIUM
 }
 
 func (this *MediumLevel) IsSnakeDied(scene game_abstr.IGameScene) bool {
@@ -23,7 +28,7 @@ func (this *MediumLevel) IsSnakeDied(scene game_abstr.IGameScene) bool {
 
 	visited := make(map[string]bool, snakeBody.Size())
 	next := snakeBody.Head()
-	for next.Next != nil {
+	for next != nil {
 		key := fmt.Sprintf("%v_%v", next.Val.Coords().X, next.Val.Coords().Y)
 		_, crossed := visited[key]
 		if crossed {

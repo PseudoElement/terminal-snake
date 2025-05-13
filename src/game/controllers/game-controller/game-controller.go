@@ -46,16 +46,34 @@ func (this *GameController) StopGame() {
 func (this *GameController) RunGame() {
 	this.stop = false
 
+	// loop listening to updates
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
 				fmt.Println("Recovered. Error:\n", r)
 			}
 		}()
+		for !this.gameScene.Snake().IsDead() && !this.stop {
+			time.Sleep(30 * time.Millisecond)
+			this.teaProgram.Send(game_abstr.UpdateTrigger{})
+		}
 
+		if this.gameScene.Snake().IsDead() {
+			this.teaProgram.Send(game_abstr.ShowDeathScreenTrigger{})
+		}
+		this.StopGame()
+	}()
+
+	// loop for snake behaviour
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered. Error:\n", r)
+			}
+		}()
 		for !this.gameScene.Snake().IsDead() && !this.stop {
 			diffLevel := this.store.Get(consts.DIFFICULTY).(game_abstr.IDiffLevel)
-			delay := time.Duration(diffLevel.LoopDelayMs())
+			delay := time.Duration(diffLevel.SnakeSpeedMs())
 			time.Sleep(delay * time.Millisecond)
 
 			moveDir := this.store.Get(consts.MOVE_DIRECTION).(game_abstr.MoveDirection)
@@ -64,22 +82,13 @@ func (this *GameController) RunGame() {
 
 			if diffLevel.IsSnakeDied(this.gameScene) {
 				snake.Die()
-				break
 			}
 			if this.gameScene.DoesSnakeTakeFood() {
 				snake.Eat(this.gameScene.Food())
 				this.IncrementScore()
-				// this.gameScene.RemoveFood()
 				this.gameScene.SpawnFood()
 			}
-
-			this.teaProgram.Send(game_abstr.UpdateTrigger{})
 		}
-
-		if this.gameScene.Snake().IsDead() {
-			this.teaProgram.Send(game_abstr.ShowDeathScreenTrigger{})
-		}
-		this.StopGame()
 	}()
 }
 
